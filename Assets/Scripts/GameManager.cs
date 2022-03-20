@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -5,7 +6,11 @@ public class GameManager : MonoBehaviour
     GameObject sphere;
     GameObject piller;
 
+    TextMeshPro tm;
+
     int turn = 1; // 1:white, -1:black
+    int turnCount = 0;
+    bool gameFlag = true;
 
     int[,,] field = new int[4,4,4]; // èc,âú,â°
     void Start()
@@ -24,12 +29,15 @@ public class GameManager : MonoBehaviour
                 obj.transform.SetParent(GameObject.Find("Board").transform);
             }
         }
+
+        tm = GameObject.Find("Text").GetComponent<TextMeshPro>();
+        tm.text = "";
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && gameFlag)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -55,16 +63,30 @@ public class GameManager : MonoBehaviour
                     field[y, x, z] = turn;
                     if(CheckField(y, x, z))
                     {
+                        gameFlag = false;
                         Debug.Log("Game End");
+                        if(turn == 1)
+                        {
+                            tm.text = "White Win!!!";
+                        }
+                        else
+                        {
+                            tm.text = "Brack Win!!!";
+                        }
                     }
 
                     turn *= -1;
+                    turnCount++;
                 }
 
                 // --------------------Debug--------------------
                 // FieldDebug();
             }
-            
+        }
+
+        if(!gameFlag && turnCount > 63)
+        {
+            tm.text = "Draw!!!";
         }
     }
 
